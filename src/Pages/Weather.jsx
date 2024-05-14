@@ -33,9 +33,9 @@ function Weather() {
   };
   useEffect(() => {
     getWeather();
-  }, []);
+  }, [data]);
 
-  let iconImg = data.weather[0].icon;
+  // let iconImg = data.weather[0].icon;
   return (
     <>
       <div
@@ -110,12 +110,12 @@ function Weather() {
             <div className="flex justify-center items-center mt-9 h-20">
               <div>
                 
-                {data?.weather && data?.weather?.length > 0 && (
+                {/* {data?.weather && data.weather.length > 0 && (
                   <img
                     src={`https://openweathermap.org/img/wn/${iconImg}.png`}
                     alt="Weather Icon"
                   />
-                )}
+                )} */}
               </div>
             </div>
           </div>
