@@ -33,7 +33,7 @@ function Weather() {
   };
   useEffect(() => {
     getWeather();
-  }, [data]);
+  }, []);
 
   // let iconImg = data.weather[0].icon;
   return (
