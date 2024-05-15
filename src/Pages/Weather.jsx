@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import backgroundImage from "../Images/bgImg.jpg";
 import backImage from "../Images/backimg.png";
 import umbrella from "../Images/umbrella.png";
@@ -9,6 +9,7 @@ import humidity from "../Images/icons8-humidity-50.png";
 function Weather() {
   const [location, setLocation] = useState("");
   const [data, setData] = useState("");
+  const [weatherCast, setforeCast] = useState([]);
   const API_KEY = `de7bf3dd53bd737f80a064ec0b825fb3`;
   const lat = "24.8607";
   const lon = "67.0011";
@@ -17,23 +18,47 @@ function Weather() {
   };
   const getWeather = async (location) => {
     let url;
+    let foreCastURL;
     if (location) {
-      url = `https://api.openweathermap.org/data/2.5/weather?&q=${location}&appid=${API_KEY}&units=metric`;
+      url = `https://api.openweathermap.org/data/2.5/weather?&q=${location}&appid=${API_KEY}&units=metric`,
+      foreCastURL =  `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${API_KEY}&units=metric`
+
     } else {
-      url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+      try{
+        const position = await getCurrentPosition();
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`,
+        foreCastURL =`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+
+      }catch(err){
+        console.log(err)
+      }
     }
     try {
       const response = await fetch(url);
       const result = await response.json();
       setData(result);
       setLocation('')
-    } catch (error) {
+      const fetchForecast = await fetch(foreCastURL);
+      const resForecast = await fetchForecast.json();
+      setforeCast(resForecast);
+
+    }
+     catch (error) {
       console.error("Error fetching weather data:", error);
     }
   };
+  const getCurrentPosition =()=>{
+    return new Promise ((resolve,reject)=>{
+      navigator.geolocation.getCurrentPosition(resolve,reject)
+    })
+  }
   useEffect(() => {
     getWeather();
-  }, []);
+    // console.log(weatherCast)
+  }, [weatherCast]);
+  // console.log(weatherCast)
 
   // let iconImg = data.weather[0].icon;
   return (
