@@ -20,47 +20,47 @@ function Weather() {
     let url;
     let foreCastURL;
     if (location) {
-      url = `https://api.openweathermap.org/data/2.5/weather?&q=${location}&appid=${API_KEY}&units=metric`,
+      url = `https://api.openweathermap.org/data/2.5/weather?&q=${location}&appid=${API_KEY}&units=metric`;
       foreCastURL =  `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${API_KEY}&units=metric`
-
     } else {
-      try{
+      try {
         const position = await getCurrentPosition();
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`,
+        url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
         foreCastURL =`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
-
-      }catch(err){
-        console.log(err)
+      } catch (err) {
+        console.log(err);
       }
     }
     try {
       const response = await fetch(url);
       const result = await response.json();
       setData(result);
-      setLocation('')
+      setLocation("");
+      console.log(data);
       const fetchForecast = await fetch(foreCastURL);
       const resForecast = await fetchForecast.json();
       setforeCast(resForecast);
-
-    }
-     catch (error) {
+      console.log(weatherCast)
+    } catch (error) {
       console.error("Error fetching weather data:", error);
     }
   };
-  const getCurrentPosition =()=>{
-    return new Promise ((resolve,reject)=>{
-      navigator.geolocation.getCurrentPosition(resolve,reject)
-    })
-  }
+  let iconImg = data?.weather?.[0]?.icon;
+  console.log(iconImg)
+  // let iconImg = "01n";
+    const getCurrentPosition = () => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+  };
   useEffect(() => {
     getWeather();
-    // console.log(weatherCast)
-  }, [weatherCast]);
-  // console.log(weatherCast)
 
-  // let iconImg = data.weather[0].icon;
+    // console.log(weatherCast.list[0].dt_txt)
+  }, []);
+
   return (
     <>
       <div
@@ -134,13 +134,12 @@ function Weather() {
             </div>
             <div className="flex justify-center items-center mt-9 h-20">
               <div>
-                
-                {/* {data?.weather && data.weather.length > 0 && (
-                  <img
-                    src={`https://openweathermap.org/img/wn/${iconImg}.png`}
+              <img
+                    src={`https://openweathermap.org/img/wn/${iconImg}.png`} // Dynamically construct the URL for the weather icon
                     alt="Weather Icon"
                   />
-                )} */}
+              
+                
               </div>
             </div>
           </div>
