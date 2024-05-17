@@ -4,6 +4,7 @@ import backImage from "../Images/backimg.png";
 import umbrella from "../Images/umbrella.png";
 import wind from "../Images/icons8-wind-30.png";
 import humidity from "../Images/icons8-humidity-50.png";
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import SunImg from "../Images/sunimg-removebg-preview.png";
 
 function Weather() {

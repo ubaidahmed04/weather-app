@@ -1,0 +1,29 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+.main{
+    background-color: #0B131E;
+}
+.temp{
+    width: 70%;
+}
+.fore-cast{
+    width: 30%;
+    background-color: #202B3B;
+    margin: 9px;
+    padding: 11px;
+    border-radius: 30px;
+
+}
+.img-icon{
+    width: 50px;
+}
+.today{
+    color:#C4C9D2;
+    border-bottom: 1px solid #C4C9D2;
+    align-items: center;
+    margin: 10px;
+    justify-content: center;
+    justify-content: space-around;
+}
