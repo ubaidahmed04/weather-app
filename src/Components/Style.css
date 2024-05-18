@@ -4,26 +4,32 @@
 }
 .main{
     background-color: #0B131E;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-height: auto
 }
 .temp{
-    width: 70%;
+    width: auto;
+    /* margin: 9px; */
 }
 .fore-cast{
-    width: 30%;
+    /* width: 30%; */
     background-color: #202B3B;
     margin: 9px;
-    padding: 11px;
+    padding: 15px;
     border-radius: 30px;
-
+    flex-grow: 1;
 }
+
 .img-icon{
     width: 50px;
 }
 .today{
     color:#C4C9D2;
-    border-bottom: 1px solid #C4C9D2;
     align-items: center;
     margin: 10px;
     justify-content: center;
     justify-content: space-around;
+    /* margin-top:10px ; */
 }
