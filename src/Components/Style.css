@@ -1,11 +1,13 @@
 *{
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 .main{
     background-color: #0B131E;
     display: flex;
     flex-direction: column;
+    /* align-items: center; */
     min-height: 100vh;
     max-height: auto
 }
@@ -32,4 +34,13 @@
     justify-content: center;
     justify-content: space-around;
     /* margin-top:10px ; */
+}
+.not-found{
+    justify-content: center;
+    align-items: center;
+    /* position: relative; */
+    border: 2px solid #c3c3c3; 
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    background-color: #FFFFFF; /* White background */
 }

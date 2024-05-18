@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
-import App from "./../App";
-import MenuBar from "../Components/Menu";
+import React, { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
-import { Input, Space } from "antd";
+import { Button, Input, Space, Spin, Empty } from "antd";
 import img from "../Images/sun.png";
-const { Search } = Input;
-import { Empty, Transfer } from "antd";
+import NoData from "../Images/not-found.png";
 import "../Components/Style.css";
+
+const { Search } = Input;
 
 function Location() {
   const [location, setLocation] = useState("");
-  const [data, setData] = useState("");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [weatherCast, setforeCast] = useState([]);
   const API_KEY = `de7bf3dd53bd737f80a064ec0b825fb3`;
 
   const onBtnCall = () => {
-    console.log("first");
     getWeather(location);
   };
 
@@ -41,22 +40,33 @@ function Location() {
       const result = await response.json();
       setData(result);
       setLocation("");
-      console.log("Weather Data:", result); // Check the data here
+      setLoading(false);
       const fetchForecast = await fetch(foreCastURL);
       const resForecast = await fetchForecast.json();
       setforeCast(resForecast);
-      console.log("Forecast Data:", resForecast); // Check the forecast data here
     } catch (error) {
       console.error("Error fetching weather data:", error);
+      setLoading(false); 
     }
   };
 
   let iconImg = data?.weather?.[0]?.icon;
+ 
 
   const getCurrentPosition = () => {
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      getWeather(location);
+    }
   };
 
   useEffect(() => {
@@ -65,18 +75,17 @@ function Location() {
 
   return (
     <>
-      <div className="main">
-        <span className="flex items-center mt-1 font-bold ml-20  rounded-l-lg">
+      <div className="main  ">
+        <span className="flex lg:w-[54rem] md:w-[44rem] xsm:ml-2 ml-10 mt-2 font-bold">
           <TextField
             id="filled-search"
             label="Enter your Location"
             type="search"
             variant="filled"
             value={location}
-            onChange={(e) => {
-              setLocation(e.target.value);
-            }}
-            style={{ background: "#FFFFFF", flexGrow: 0.5, color: "#D1D5DB",}}
+            onKeyPress={handleKeyPress} 
+            onChange={(e) => setLocation(e.target.value)}
+            style={{ background: "#FFFFFF", flexGrow: 0.5, color: "#D1D5DB" }}
           />
           <span
             style={{
@@ -86,7 +95,8 @@ function Location() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              cursor:"pointer"
+              cursor: "pointer",
+              borderRadius: "0 4px 4px 0"
             }}
             onClick={onBtnCall}
             className="w-45"
@@ -94,73 +104,79 @@ function Location() {
             <i className="text-gray-600 fa-solid fa-2x fa-magnifying-glass"></i>
           </span>
         </span>
-        {data && data.name ?(
-        <div className="flex flex-wrap" style={{ color: "#C4C9D2" }}>
-          <div className="temp md:grow sm:grow">
-            <div className="flex flex-row m-5 lg-m-9 items-center  justify-between">
-              <div className="flex  flex-col ">
-                <div>
-                  <span className="text-[39px]  font-black font-sans text-2xl text-white">
-                    {data.name}
-                  </span>
-                </div>
-                  <span className="">Chance of rain  {data.clouds && `${data.clouds.all}%`}</span>
-                <div className="mt-5">
-                  <span className="text-white font-black text-[34px]">
-                    {data.main && `${Math.floor(data.main.temp)}°`}
-                  </span>
-                </div>
-              </div>
-              <div>
-                <img
-                style={{
-                  width:"155px"
-                }}
-                  src={`https://openweathermap.org/img/wn/${iconImg}.png`}
-                  className="img-main"
-                  alt="cloud Image"
-                />
-              </div>
+        {loading ? (
+          <div className="items-center flex justify-center mt-[17rem]">
+            <div>
+            <Spin size="large" />
             </div>
-            <div
-              className="m-3 p-3"
-              style={{
-                background: "#202B3B",
-                borderRadius: "10px",
-              }}
-            >
-              <span
-                className="font-semibold text-sm md:text-center"
-                style={{ color: "#C4C9D2" }}
-              >
-                TODAYS FORECAST
+
+          </div>
+        ) : data === undefined || data === null || data.cod === "404" ? (
+          <div className="flex flex-col not-found text-slate-500 lg:mt-7 rounded-lg lg:h-[27rem] lg:w-3/5 md:h-[20rem] sm:h-[20rem] xsm:h-[15rem] lg:mx-[4rem] md:mx-[3rem] sm:mx-[4rem] mx-3 overflow-hidden">
+            <div className="lg:w-[23rem] xsm:w-[15rem] sm:w-[15rem] ">
+              <img src={NoData} alt="data not found" />
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="font-extrabold lg:text-[2rem] text-50">
+                Whoops! This information is not active in a moment
               </span>
-              <div className="flex shrink justify-center items-center flex-wrap">
-                {/* Example forecast data display */}
-                {weatherCast.list &&
-                  weatherCast.list.slice(0, 6).map((forecast, index) => (
+              <br />
+              <Button
+                onClick={handleRefresh}
+                className="text-slate-200 flex bg-slate-500 object-fit"
+                type="primary"
+              >
+                Go Back
+              </Button>
+            </div>
+          </div>
+        ) : data && data.name ? (
+          <div className="flex flex-wrap" style={{ color: "#C4C9D2" }}>
+            <div className="temp md:grow sm:grow">
+              <div className="flex flex-row m-5 lg-m-9 items-center justify-between">
+                <div className="flex flex-col">
+                  <div>
+                    <span className="text-[39px] font-black font-sans text-2xl text-white">
+                      {data.name}
+                    </span>
+                  </div>
+                  <span>
+                    Chance of rain {data.clouds && `${data.clouds.all}%`}
+                  </span>
+                  <div className="mt-5">
+                    <span className="text-white font-black text-[34px]">
+                      {data.main && `${Math.floor(data.main.temp)}°`}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <img
+                    style={{ width: "155px" }}
+                    src={`https://openweathermap.org/img/wn/${iconImg}.png`}
+                    className="img-main"
+                    alt="cloud Image"
+                  />
+                </div>
+              </div>
+              <div className="m-3 p-3" style={{ background: "#202B3B", borderRadius: "10px" }}>
+                <span className="font-semibold text-sm md:text-center" style={{ color: "#C4C9D2" }}>
+                  TODAYS FORECAST
+                </span>
+                <div className="flex shrink justify-center items-center flex-wrap">
+                  {weatherCast.list && weatherCast.list.slice(0, 6).map((forecast, index) => (
                     <div
                       key={index}
-                      style={{
-                        background: "#202B3B",
-                        borderBlockColor: "#202B3B",
-                      }}
+                      style={{ background:           "#202B3B", borderBlockColor: "#202B3B" }}
                       className="border-r border-r-gray-700 p-3 mr-1 text-center pb-3 m-2"
                     >
-                      <span
-                        style={{
-                          color: "#C4C9D2",
-                          fontSize: "13px",
-                          fontWeight: "bold",
-                        }}
-                      >
+                      <span style={{ color: "#C4C9D2", fontSize: "13px", fontWeight: "bold" }}>
                         {new Date(forecast.dt * 1000).toLocaleTimeString()}
                       </span>
                       <span>
                         <img
-                          src={`https://openweathermap.org/img/wn/${iconImg}.png`}
+                          src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`}
                           className="img-icon"
-                          alt=""
+                          alt="cloud icon "
                         />
                       </span>
                       <span className="font-extrabold text-lg">
@@ -168,107 +184,87 @@ function Location() {
                       </span>
                     </div>
                   ))}
+                </div>
               </div>
-            </div>
-            <div
-              className="m-3 p-3 rounded-lg"
-              style={{ background: "#202B3B" }}
-            >
-              <div>
-                <span
-                  className="font-semibold text-sm"
-                  style={{ color: "#C4C9D2" }}
-                >
-                  AIR CONDITIONS
-                </span>
-                <div className="flex flex-row justify-around">
-                  <div className="flex flex-col">
-                    <span>
-                      <i className="fa-solid fa-temperature-half"></i>{" "}
-                      <span className="text-md">Real Feel</span>
-                    </span>
-                    <span className="font-bold text-2xl">
-                      {data.main && `${data.main.feels_like}°`}
-                    </span>
-                    <span>
-                      <i className="fa-solid fa-droplet"></i>{" "}
-                      <span>Chance of rain</span>
-                    </span>
-                    <span className="font-bold text-2xl">
-                      {data.clouds && `${data.clouds.all}%`}
-                    </span>
-                  </div>
-                  <div>
+              <div className="m-3 p-3 rounded-lg" style={{ background: "#202B3B" }}>
+                <div>
+                  <span className="font-semibold text-sm" style={{ color: "#C4C9D2" }}>
+                    AIR CONDITIONS
+                  </span>
+                  <div className="flex flex-row justify-around">
                     <div className="flex flex-col">
                       <span>
-                        <i className="fa-solid fa-wind"></i> <span>wind</span>
+                        <i className="fa-solid fa-temperature-half"></i> <span className="text-md">Real Feel</span>
                       </span>
                       <span className="font-bold text-2xl">
-                        {data.wind && `${data.wind.speed} km/h`}
+                        {data.main && `${data.main.feels_like}°`}
                       </span>
                       <span>
-                        <i class="fa-solid fa-water"></i>
-                        <span> Humidity</span>
+                        <i className="fa-solid fa-droplet"></i> <span>Chance of rain</span>
                       </span>
-                      <span className="font-bold text-2xl">{data?.main?.humidity}</span>
+                      <span className="font-bold text-2xl">
+                        {data.clouds && `${data.clouds.all}%`}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="flex flex-col">
+                        <span>
+                          <i className="fa-solid fa-wind"></i> <span>wind</span>
+                        </span>
+                        <span className="font-bold text-2xl">
+                          {data.wind && `${data.wind.speed} km/h`}
+                        </span>
+                        <span>
+                          <i className="fa-solid fa-water"></i>
+                          <span> Humidity</span>
+                        </span>
+                        <span className="font-bold text-2xl">
+                          {data?.main?.humidity}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            
+            {weatherCast && weatherCast.list && (
+  <div className="fore-cast md:grow sm:grow">
+    <span style={{ color: "#C4C9D2" }} className="p-9 text-[19] font-medium sm:text-base lg:text-lg lg:mt-10">
+      7 days forecast
+    </span>
+    {Object.values(
+      weatherCast.list.reduce((uniqueForecasts, forecast) => {
+        const date = forecast.dt_txt.split(' ')[0];
+        if (!uniqueForecasts[date]) {
+          uniqueForecasts[date] = forecast;
+        }
+        return uniqueForecasts;
+      }, {})
+    ).map((forecast, index) => (
+      <div key={index} className="flex today border-b border-b-gray-700 pb-2">
+        <span className="text-sm">
+          {forecast.dt_txt.split(' ')[0]}
+        </span>
+        <span>
+          <img 
+            src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`}
+            className="img-icon"
+            alt=""
+          />
+        </span>
+        <span className="text-base font-medium">{forecast.weather[0].main}</span>
+        <span>
+          <b>{Math.floor(forecast.main.temp_max)}/{Math.floor(forecast.main.temp_min)}</b>
+        </span>
+      </div>
+    ))}
+  </div>
+)}
+
+ 
           </div>
-          <div className="fore-cast md:grow sm:grow">
-            <span
-              style={{ color: "#C4C9D2" }}
-              className="p-9 text-[19] font-medium sm:text-base lg:text-lg lg:mt-10"
-            >
-              7 days forecast
-            </span>
-            {weatherCast.list &&
-              weatherCast.list.slice(0, 7).map((forecast, index) => (
-                <div
-                  key={index}
-                  className="flex today border-b border-b-gray-700 pb-2"
-                >
-                  <span className="text-sm">
-                    {new Date(forecast.dt * 1000).toLocaleDateString()}
-                  </span>
-                  <span>
-                    <img
-                      src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`}
-                      className="img-icon"
-                      alt=""
-                    />
-                  </span>
-                  <span className="text-base font-medium">
-                    {forecast.weather[0].main}
-                  </span>
-                  <span><b>{`${Math.floor(forecast.main.temp_max)}/${Math.floor(forecast.main.temp_min)}`}</b></span>
-                </div>
-              ))}
-          </div>
-        </div>):(
-         <div
-         className="flex  flex-col justify-center"
-         style={{
-           background: "#E6F4FF",
-           width: "440px",
-           height: "500px",
-           borderRadius: "20px",
-           marginLeft: "190px",
-         }}
-       >
-         <div className="flex items-center flex-col ">
-           <Empty  image={Empty.PRESENTED_IMAGE_SIMPLE} />
-           <div>
-             <span className="font-extrabold  text-50 ">Not found !</span>
-             <span className="font-bold bold text-40">
-               Please Enter Valid Country or City
-             </span>
-           </div>
-         </div>
-       </div>  
-        )}
+        ) : null}
       </div>
     </>
   );
@@ -276,25 +272,3 @@ function Location() {
 
 export default Location;
 
-{
-  /* <div
-  className="flex  flex-col justify-center"
-  style={{
-    background: "#E6F4FF",
-    width: "440px",
-    height: "500px",
-    borderRadius: "20px",
-    marginLeft: "190px",
-  }}
->
-  <div className="flex items-center flex-col ">
-    <Empty  image={Empty.PRESENTED_IMAGE_SIMPLE} />
-    <div>
-      <span className="font-extrabold  text-50 ">Not found !</span>
-      <span className="font-bold bold text-40">
-        Please Enter Valid Country or City
-      </span>
-    </div>
-  </div>
-</div> */
-}
