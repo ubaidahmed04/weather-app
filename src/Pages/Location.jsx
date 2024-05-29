@@ -28,6 +28,7 @@ function Location() {
     } else {
       try {
         const position = await getCurrentPosition();
+        console.log(position)
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
@@ -72,6 +73,7 @@ function Location() {
   useEffect(() => {
     getWeather();
   }, []);
+
 
   return (
     <>
