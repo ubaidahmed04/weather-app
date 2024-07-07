@@ -13,6 +13,7 @@ function Location() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [weatherCast, setforeCast] = useState([]);
+  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
   const API_KEY = `de7bf3dd53bd737f80a064ec0b825fb3`;
 
   const onBtnCall = () => {
@@ -35,6 +36,9 @@ function Location() {
         foreCastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
       } catch (err) {
         console.log(err);
+        setLocationPermissionDenied(true);
+        setLoading(false);
+        return;
       }
     }
     try {
@@ -73,7 +77,6 @@ function Location() {
   useEffect(() => {
     getWeather();
   }, []);
-
 
   return (
     <>
@@ -129,6 +132,25 @@ function Location() {
           <div className="items-center flex justify-center mt-[17rem]">
             <div>
               <Spin size="large" />
+            </div>
+          </div>
+        ) : locationPermissionDenied ? (
+          <div className="flex flex-col not-found text-slate-500 lg:mt-7 rounded-lg lg:h-[27rem] lg:w-4/5 md:h-[20rem] sm:h-[20rem] xsm:h-[15rem] lg:mx-[4rem] md:mx-[3rem] sm:mx-[3rem] mt-9 overflow-hidden">
+            <div className="lg:w-[19rem] xl:w-[18rem] xsm:w-[9rem] sm:w-[6rem] ">
+              <img src={NotFound} alt="location permission denied" />
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="font-extrabold lg:text-[1.4rem] text-50 sm:mt-7 sm:text-center">
+                Please enable location services or enter your location manually.
+              </span>
+              <br />
+              <Button
+                onClick={handleRefresh}
+                className="text-slate-200 flex bg-slate-500 object-fit"
+                type="primary"
+              >
+                Refresh
+              </Button>
             </div>
           </div>
         ) : data === undefined || data === null || data.cod === "404" ? (
