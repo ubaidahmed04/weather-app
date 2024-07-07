@@ -160,8 +160,7 @@ function Location() {
             </div>
             <div className="flex flex-col items-center">
               <span className="font-extrabold lg:text-[1.4rem] text-50 sm:mt-7 sm:text-center">
-                Sorry, we couldn't find the data for the specified city or
-                Country.
+              Unfortunately, we couldn't retrieve the information for the given city or country.
               </span>
               <br />
               <Button
