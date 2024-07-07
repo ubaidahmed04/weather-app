@@ -262,7 +262,7 @@ function Location() {
                         <span className="text-md">Real Feel</span>
                       </span>
                       <span className="font-bold text-2xl">
-                        {data.main && `${data.main.feels_like}°`}
+                        {data.main && `${Math.floor(data.main.feels_like)}°`}
                       </span>
                       <span>
                         <i className="fa-solid fa-droplet"></i>{" "}
